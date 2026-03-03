@@ -1,0 +1,9 @@
+sample_size,framework,time
+10000,scikit-learn,0.5
+10000,MLlib,2.1
+50000,scikit-learn,1.8
+50000,MLlib,2.8
+100000,scikit-learn,4.2
+100000,MLlib,4.5
+250000,scikit-learn,12.5
+250000,MLlib,8.2

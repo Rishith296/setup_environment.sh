@@ -1,0 +1,6 @@
+stage,duration_seconds,rows_processed
+Data Ingestion,45.2,8500000
+Validation,12.8,8500000
+Feature Engineering,89.5,8500000
+Model Training,59.230592489242554,5950000
+Evaluation,28.3,1275000

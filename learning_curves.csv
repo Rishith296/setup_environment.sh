@@ -1,0 +1,7 @@
+training_size,model,train_accuracy,test_accuracy
+3000,Logistic Regression,0.9496666666666667,0.6172
+6000,Logistic Regression,0.8911666666666667,0.6157
+9000,Logistic Regression,0.8412222222222222,0.613
+15000,Logistic Regression,0.7992666666666667,0.6182
+21000,Logistic Regression,0.7661904761904762,0.6138
+30000,Logistic Regression,0.7399,0.6101

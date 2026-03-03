@@ -1,0 +1,26 @@
+﻿name: german-weather-ml
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - numpy>=1.21
+  - pandas>=1.4
+  - matplotlib>=3.5
+  - seaborn>=0.12
+  - scikit-learn>=1.1
+  - scipy>=1.9
+  - jupyter>=1.0
+  - pytest>=7.0
+  - openpyxl
+  - pip:
+    - pyspark>=3.4
+    - pyarrow>=10.0
+    - findspark
+    - requests
+    - beautifulsoup4
+    - tqdm
+    - psutil
+    - pyyaml
+    - joblib

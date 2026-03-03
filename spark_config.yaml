@@ -1,0 +1,365 @@
+﻿# ================================================================
+# SPARK CONFIGURATION
+# German Weather Big Data ML Pipeline
+# Optimised for hourly weather data (500+ stations x decades)
+# ================================================================
+
+spark:
+  app_name: "GermanWeatherBigDataML"
+  master: "local[*]"
+  
+  # Driver Configuration
+  driver:
+    memory: "8g"
+    maxResultSize: "4g"
+    extraJavaOptions: "-XX:+UseG1GC"
+  
+  # Executor Configuration
+  executor:
+    memory: "8g"
+    cores: 4
+    instances: 2
+    extraJavaOptions: "-XX:+UseG1GC"
+  
+  # SQL Configuration
+  sql:
+    shuffle_partitions: 200
+    adaptive_enabled: true
+    adaptive_coalescePartitions_enabled: true
+    adaptive_skewJoin_enabled: true
+    autoBroadcastJoinThreshold: "100MB"
+  
+  # Serialization
+  serializer: "org.apache.spark.serializer.KryoSerializer"
+  kryoserializer_buffer_max: "1024m"
+  
+  # Storage Configuration
+  storage:
+    format: "parquet"
+    compression: "snappy"
+    partition_columns: ["year", "month"]
+    
+  # Memory Management
+  memory:
+    fraction: 0.8
+    storageFraction: 0.3
+    offHeap_enabled: false
+  
+  # Cache Strategy
+  cache:
+    storage_level: "MEMORY_AND_DISK"
+    checkpoint_dir: "./checkpoints"
+    eager_checkpoint: true
+  
+  # Network Configuration
+  network:
+    timeout: "800s"
+    maxRetries: 3
+
+# ================================================================
+# DATA SOURCE CONFIGURATION
+# DWD Climate Data Center — German Weather Service
+# ================================================================
+
+data:
+  source:
+    name: "DWD Climate Data Center (CDC)"
+    base_url: "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/"
+    license: "Open Data — DWD Terms of Use (free for all purposes)"
+    documentation: "https://opendata.dwd.de/climate_environment/CDC/Readme_intro_CDC_ftp.txt"
+    
+    # Weather Parameters to Download
+    parameters:
+      - name: "air_temperature"
+        subfolder: "air_temperature/historical/"
+        prefix: "stundenwerte_TU"
+        description: "Air temperature and humidity at 2m height"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_9", type: "int", desc: "Quality level"}
+          - {name: "TT_TU", type: "float", desc: "Air temperature 2m (C)"}
+          - {name: "RF_TU", type: "float", desc: "Relative humidity 2m (%)"}
+          
+      - name: "precipitation"
+        subfolder: "precipitation/historical/"
+        prefix: "stundenwerte_RR"
+        description: "Hourly precipitation amount and type"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_8", type: "int", desc: "Quality level"}
+          - {name: "R1", type: "float", desc: "Hourly precipitation (mm)"}
+          - {name: "RS_IND", type: "int", desc: "Precipitation indicator"}
+          - {name: "WRTR", type: "int", desc: "Precipitation type code"}
+          
+      - name: "wind"
+        subfolder: "wind/historical/"
+        prefix: "stundenwerte_FF"
+        description: "Wind speed and direction at 10m height"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_3", type: "int", desc: "Quality level"}
+          - {name: "F", type: "float", desc: "Mean wind speed (m/s)"}
+          - {name: "D", type: "float", desc: "Mean wind direction (degrees)"}
+          
+      - name: "pressure"
+        subfolder: "pressure/historical/"
+        prefix: "stundenwerte_P0"
+        description: "Station and sea level pressure"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_9", type: "int", desc: "Quality level"}
+          - {name: "P0", type: "float", desc: "Station pressure (hPa)"}
+          - {name: "P", type: "float", desc: "Sea level pressure (hPa)"}
+          
+      - name: "cloudiness"
+        subfolder: "cloudiness/historical/"
+        prefix: "stundenwerte_N"
+        description: "Cloud cover in oktas"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_8", type: "int", desc: "Quality level"}
+          - {name: "V_N", type: "int", desc: "Cloud cover (oktas 0-8)"}
+          
+      - name: "sun"
+        subfolder: "sun/historical/"
+        prefix: "stundenwerte_SD"
+        description: "Hourly sunshine duration"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_7", type: "int", desc: "Quality level"}
+          - {name: "SD_SO", type: "float", desc: "Sunshine duration (min)"}
+          
+      - name: "moisture"
+        subfolder: "moisture/historical/"
+        prefix: "stundenwerte_TF"
+        description: "Vapor pressure and dew point"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_9", type: "int", desc: "Quality level"}
+          - {name: "VP_STD", type: "float", desc: "Vapor pressure (hPa)"}
+          - {name: "TF_STD", type: "float", desc: "Dew point temperature (C)"}
+          
+      - name: "visibility"
+        subfolder: "visibility/historical/"
+        prefix: "stundenwerte_VV"
+        description: "Horizontal visibility"
+        columns:
+          - {name: "STATIONS_ID", type: "int", desc: "Station ID"}
+          - {name: "MESS_DATUM", type: "string", desc: "Timestamp YYYYMMDDHH"}
+          - {name: "QN_8", type: "int", desc: "Quality level"}
+          - {name: "V_VV", type: "float", desc: "Visibility (m)"}
+    
+    # Station Metadata
+    station_metadata:
+      url: "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/"
+      file_pattern: "*_Beschreibung_Stationen.txt"
+      columns: ["station_id", "von_datum", "bis_datum", "station_height", "latitude", "longitude", "station_name", "bundesland"]
+  
+  # Target Variable
+  target:
+    name: "has_precipitation"
+    type: "binary"
+    description: "1 if R1 > 0mm in that hour, else 0"
+    derived_from: "R1"
+    positive_class: 1
+    negative_class: 0
+  
+  # Missing Value Handling
+  missing_values:
+    codes: [-999, -999.0, -999.00, ""]
+    strategy: "drop_or_impute"
+    imputation_method: "median"
+  
+  # Quality Flags (DWD convention)
+  quality_flags:
+    1: "only formal control"
+    2: "controlled, not corrected"
+    3: "automatic correction"
+    5: "historical, subjective method"
+    7: "second control, not corrected"
+    8: "quality assured"
+    9: "not all parameters checked"
+    10: "quality assured, all parameters"
+
+# ================================================================
+# MODEL CONFIGURATION
+# ================================================================
+
+models:
+  algorithms:
+    - name: "logistic_regression"
+      framework: "pyspark_mllib"
+      class: "pyspark.ml.classification.LogisticRegression"
+      hyperparameters:
+        regParam: [0.0, 0.01, 0.1]
+        elasticNetParam: [0.0, 0.5, 1.0]
+        maxIter: [100]
+      role: "interpretable_baseline"
+      
+    - name: "random_forest"
+      framework: "pyspark_mllib"
+      class: "pyspark.ml.classification.RandomForestClassifier"
+      hyperparameters:
+        numTrees: [50, 100, 200]
+        maxDepth: [5, 10, 15]
+        minInstancesPerNode: [1, 5]
+      role: "bagging_ensemble"
+      
+    - name: "gradient_boosted_trees"
+      framework: "pyspark_mllib"
+      class: "pyspark.ml.classification.GBTClassifier"
+      hyperparameters:
+        maxIter: [50, 100]
+        maxDepth: [5, 10]
+        stepSize: [0.1, 0.2]
+      role: "boosting_ensemble"
+      
+    - name: "svm"
+      framework: "scikit_learn"
+      class: "sklearn.svm.SVC"
+      hyperparameters:
+        C: [0.1, 1.0, 10.0]
+        kernel: ["rbf", "linear"]
+        gamma: ["scale", "auto"]
+      role: "single_node_baseline"
+      note: "Used for MLlib vs sklearn comparison"
+  
+  # Cross-Validation Settings
+  cross_validation:
+    num_folds: 5
+    parallelism: 4
+    seed: 42
+    stratified: true
+  
+  # Train/Validation/Test Split
+  data_split:
+    train: 0.7
+    validation: 0.15
+    test: 0.15
+    seed: 42
+    temporal_split: true
+    temporal_column: "datetime"
+  
+  # Model Persistence
+  serialization:
+    format: "mllib_native"
+    backup_format: "pickle"
+    checkpoint_enabled: true
+    checkpoint_interval: 10
+
+# ================================================================
+# EVALUATION METRICS
+# ================================================================
+
+evaluation:
+  metrics:
+    primary: "auc_roc"
+    secondary:
+      - "accuracy"
+      - "precision"
+      - "recall"
+      - "f1_score"
+      - "auc_pr"
+      - "log_loss"
+  
+  # Bootstrap Confidence Intervals
+  bootstrap:
+    enabled: true
+    n_iterations: 1000
+    confidence_level: 0.95
+    method: "percentile"
+  
+  # Stability Analysis
+  stability:
+    enabled: true
+    perturbation_fraction: 0.05
+    n_perturbations: 10
+  
+  # Threshold Optimization
+  threshold_optimization:
+    enabled: true
+    cost_matrix:
+      true_positive: 100
+      true_negative: 0
+      false_positive: -10
+      false_negative: -50
+    search_range: [0.1, 0.9]
+    search_step: 0.05
+
+# ================================================================
+# SCALABILITY ANALYSIS
+# ================================================================
+
+scalability:
+  strong_scaling:
+    enabled: true
+    data_fractions: [0.1, 0.25, 0.5, 0.75, 1.0]
+    fixed_resources: true
+  
+  weak_scaling:
+    enabled: true
+    data_per_core: "100MB"
+    core_counts: [1, 2, 4, 8]
+  
+  profiling:
+    memory_tracking: true
+    time_tracking: true
+    spark_ui_screenshots: true
+  
+  comparison:
+    mllib_vs_sklearn: true
+    sample_sizes: [10000, 50000, 100000, 250000]
+
+# ================================================================
+# TABLEAU EXPORT
+# ================================================================
+
+tableau_export:
+  output_dir: "../results/metrics"
+  files:
+    - name: "data_quality_summary.csv"
+      dashboard: 1
+      content: "Missing values, distributions, validation results"
+    - name: "pipeline_metrics.csv"
+      dashboard: 1
+      content: "Ingestion times, row counts, schema validation"
+    - name: "model_metrics.csv"
+      dashboard: 2
+      content: "All evaluation metrics per model"
+    - name: "feature_importance.csv"
+      dashboard: 2
+      content: "Feature importance scores from tree models"
+    - name: "confusion_matrices.csv"
+      dashboard: 2
+      content: "TP, TN, FP, FN counts per model"
+    - name: "roc_curve_data.csv"
+      dashboard: 2
+      content: "FPR, TPR points for ROC curves"
+    - name: "learning_curves.csv"
+      dashboard: 2
+      content: "Accuracy vs training size"
+    - name: "station_results.csv"
+      dashboard: 3
+      content: "Per-station accuracy with lat/lon"
+    - name: "seasonal_patterns.csv"
+      dashboard: 3
+      content: "Monthly precipitation patterns"
+    - name: "threshold_analysis.csv"
+      dashboard: 3
+      content: "Metrics at different thresholds"
+    - name: "scalability_results.csv"
+      dashboard: 4
+      content: "Training times vs data size"
+    - name: "resource_usage.csv"
+      dashboard: 4
+      content: "Memory and CPU usage"
+    - name: "mllib_sklearn_comparison.csv"
+      dashboard: 4
+      content: "Side-by-side framework comparison"

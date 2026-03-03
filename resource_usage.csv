@@ -1,0 +1,5 @@
+model_name,peak_memory_mb,avg_cpu
+Logistic Regression,512,45
+Random Forest,2048,85
+GBT,1536,78
+SVM,1024,65

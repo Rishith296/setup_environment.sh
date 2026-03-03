@@ -1,4 +1,4 @@
-"""
+﻿"""
 Performance Profiler — Scalability & Resource Tracking
 =======================================================
 Tracks: training time, memory usage, CPU utilisation per task.
@@ -164,3 +164,8 @@ if __name__ == "__main__":
     record = profiler.start_timer("example_model_training")
     time.sleep(0.3)  # Simulate work
     profiler.stop_timer(record)
+    
+    # Save and print results
+    profiler.save_results()
+    profiler.save_csv()
+    profiler.print_summary()

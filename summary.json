@@ -1,0 +1,27 @@
+{
+  "dataset": {
+    "source": "DWD Climate Data Center",
+    "total_records": 8500000,
+    "features": 19
+  },
+  "models": {
+    "Logistic Regression": {
+      "auc": "0.6637",
+      "f1": "0.5692"
+    },
+    "Random Forest": {
+      "auc": "0.6501",
+      "f1": "0.5343"
+    },
+    "Gradient Boosted Trees": {
+      "auc": "0.6510",
+      "f1": "0.4270"
+    },
+    "Support Vector Machine": {
+      "auc": "0.6637",
+      "f1": "0.4465"
+    }
+  },
+  "best_model": "Support Vector Machine",
+  "optimal_threshold": 0.1
+}

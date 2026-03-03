@@ -1,0 +1,336 @@
+﻿{
+  "dataset": {
+    "name": "DWD CDC Historical Hourly Weather Observations",
+    "region": "Germany",
+    "source": "Deutscher Wetterdienst (German Weather Service)",
+    "source_url": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/",
+    "documentation_url": "https://opendata.dwd.de/climate_environment/CDC/Readme_intro_CDC_ftp.txt",
+    "license": "Open Data (DWD Terms of Use — free for all purposes including commercial)",
+    "update_frequency": "Daily",
+    "temporal_coverage": "1893 to present (varies by station)",
+    "spatial_coverage": "500+ weather stations across Germany",
+    "approximate_size": ">1GB (combined all parameters)",
+    "format": "ZIP archives containing semicolon-separated text files"
+  },
+  
+  "raw_features": [
+    {
+      "name": "station_id",
+      "original_name": "STATIONS_ID",
+      "type": "integer",
+      "unit": null,
+      "description": "Unique DWD station identifier (5-digit code)",
+      "parameter": "all",
+      "example": 433
+    },
+    {
+      "name": "datetime",
+      "original_name": "MESS_DATUM",
+      "type": "string",
+      "format": "YYYYMMDDHH",
+      "unit": "UTC",
+      "description": "Observation timestamp in UTC",
+      "parameter": "all",
+      "example": "2020010112"
+    },
+    {
+      "name": "temperature_c",
+      "original_name": "TT_TU",
+      "type": "float",
+      "unit": "degrees Celsius",
+      "description": "Air temperature at 2 meters height",
+      "parameter": "air_temperature",
+      "valid_range": [-50, 50],
+      "missing_code": -999
+    },
+    {
+      "name": "relative_humidity_pct",
+      "original_name": "RF_TU",
+      "type": "float",
+      "unit": "percent",
+      "description": "Relative humidity at 2 meters height",
+      "parameter": "air_temperature",
+      "valid_range": [0, 100],
+      "missing_code": -999
+    },
+    {
+      "name": "precipitation_mm",
+      "original_name": "R1",
+      "type": "float",
+      "unit": "millimeters",
+      "description": "Hourly precipitation amount",
+      "parameter": "precipitation",
+      "valid_range": [0, 200],
+      "missing_code": -999,
+      "note": "Used to derive target variable"
+    },
+    {
+      "name": "precipitation_indicator",
+      "original_name": "RS_IND",
+      "type": "integer",
+      "unit": "code",
+      "description": "Indicator if precipitation occurred (0=no, 1=yes)",
+      "parameter": "precipitation",
+      "valid_values": [0, 1],
+      "missing_code": -999
+    },
+    {
+      "name": "precipitation_type",
+      "original_name": "WRTR",
+      "type": "integer",
+      "unit": "code",
+      "description": "Type of precipitation",
+      "parameter": "precipitation",
+      "value_mapping": {
+        "0": "no precipitation",
+        "1": "rain",
+        "4": "unknown",
+        "6": "rain",
+        "7": "snow",
+        "8": "sleet",
+        "9": "no observation"
+      },
+      "missing_code": -999
+    },
+    {
+      "name": "wind_speed_ms",
+      "original_name": "F",
+      "type": "float",
+      "unit": "meters per second",
+      "description": "Mean wind speed at 10 meters height",
+      "parameter": "wind",
+      "valid_range": [0, 75],
+      "missing_code": -999
+    },
+    {
+      "name": "wind_direction_deg",
+      "original_name": "D",
+      "type": "float",
+      "unit": "degrees",
+      "description": "Mean wind direction (0=N, 90=E, 180=S, 270=W)",
+      "parameter": "wind",
+      "valid_range": [0, 360],
+      "missing_code": -999
+    },
+    {
+      "name": "station_pressure_hpa",
+      "original_name": "P0",
+      "type": "float",
+      "unit": "hectopascals",
+      "description": "Atmospheric pressure at station height",
+      "parameter": "pressure",
+      "valid_range": [870, 1084],
+      "missing_code": -999
+    },
+    {
+      "name": "sea_level_pressure_hpa",
+      "original_name": "P",
+      "type": "float",
+      "unit": "hectopascals",
+      "description": "Atmospheric pressure reduced to mean sea level",
+      "parameter": "pressure",
+      "valid_range": [870, 1084],
+      "missing_code": -999
+    },
+    {
+      "name": "cloud_cover_oktas",
+      "original_name": "V_N",
+      "type": "integer",
+      "unit": "oktas (eighths)",
+      "description": "Total cloud cover",
+      "parameter": "cloudiness",
+      "valid_range": [0, 8],
+      "value_mapping": {
+        "0": "clear sky",
+        "1-2": "few clouds",
+        "3-4": "scattered clouds",
+        "5-7": "broken clouds",
+        "8": "overcast"
+      },
+      "missing_code": -999
+    },
+    {
+      "name": "sunshine_duration_min",
+      "original_name": "SD_SO",
+      "type": "float",
+      "unit": "minutes",
+      "description": "Sunshine duration in the past hour",
+      "parameter": "sun",
+      "valid_range": [0, 60],
+      "missing_code": -999
+    },
+    {
+      "name": "vapor_pressure_hpa",
+      "original_name": "VP_STD",
+      "type": "float",
+      "unit": "hectopascals",
+      "description": "Water vapor pressure",
+      "parameter": "moisture",
+      "valid_range": [0, 50],
+      "missing_code": -999
+    },
+    {
+      "name": "dew_point_c",
+      "original_name": "TF_STD",
+      "type": "float",
+      "unit": "degrees Celsius",
+      "description": "Dew point temperature",
+      "parameter": "moisture",
+      "valid_range": [-60, 40],
+      "missing_code": -999
+    },
+    {
+      "name": "visibility_m",
+      "original_name": "V_VV",
+      "type": "float",
+      "unit": "meters",
+      "description": "Horizontal visibility",
+      "parameter": "visibility",
+      "valid_range": [0, 100000],
+      "missing_code": -999
+    }
+  ],
+  
+  "engineered_features": [
+    {
+      "name": "hour_of_day",
+      "type": "integer",
+      "description": "Hour extracted from datetime (0-23)",
+      "purpose": "Capture diurnal patterns"
+    },
+    {
+      "name": "day_of_week",
+      "type": "integer",
+      "description": "Day of week (0=Monday, 6=Sunday)",
+      "purpose": "Capture weekly patterns"
+    },
+    {
+      "name": "month",
+      "type": "integer",
+      "description": "Month extracted from datetime (1-12)",
+      "purpose": "Capture seasonal patterns"
+    },
+    {
+      "name": "day_of_year",
+      "type": "integer",
+      "description": "Day of year (1-366)",
+      "purpose": "Finer seasonal resolution"
+    },
+    {
+      "name": "hour_sin",
+      "type": "float",
+      "description": "sin(2 * pi * hour / 24)",
+      "purpose": "Cyclical encoding of hour"
+    },
+    {
+      "name": "hour_cos",
+      "type": "float",
+      "description": "cos(2 * pi * hour / 24)",
+      "purpose": "Cyclical encoding of hour"
+    },
+    {
+      "name": "month_sin",
+      "type": "float",
+      "description": "sin(2 * pi * month / 12)",
+      "purpose": "Cyclical encoding of month"
+    },
+    {
+      "name": "month_cos",
+      "type": "float",
+      "description": "cos(2 * pi * month / 12)",
+      "purpose": "Cyclical encoding of month"
+    },
+    {
+      "name": "wind_direction_sin",
+      "type": "float",
+      "description": "sin(wind_direction_deg * pi / 180)",
+      "purpose": "Cyclical encoding of wind direction"
+    },
+    {
+      "name": "wind_direction_cos",
+      "type": "float",
+      "description": "cos(wind_direction_deg * pi / 180)",
+      "purpose": "Cyclical encoding of wind direction"
+    },
+    {
+      "name": "temp_dewpoint_diff",
+      "type": "float",
+      "unit": "degrees Celsius",
+      "description": "temperature_c - dew_point_c",
+      "purpose": "Measure of saturation proximity (lower = more humid)"
+    },
+    {
+      "name": "pressure_tendency",
+      "type": "float",
+      "unit": "hectopascals",
+      "description": "sea_level_pressure change from previous hour",
+      "purpose": "Pressure trend indicates weather changes"
+    },
+    {
+      "name": "humidity_temp_interaction",
+      "type": "float",
+      "description": "relative_humidity_pct * temperature_c",
+      "purpose": "Interaction term for humidity effect at different temps"
+    },
+    {
+      "name": "station_latitude",
+      "type": "float",
+      "unit": "degrees",
+      "description": "Geographic latitude of station",
+      "source": "station metadata"
+    },
+    {
+      "name": "station_longitude",
+      "type": "float",
+      "unit": "degrees",
+      "description": "Geographic longitude of station",
+      "source": "station metadata"
+    },
+    {
+      "name": "station_elevation",
+      "type": "float",
+      "unit": "meters",
+      "description": "Elevation of station above sea level",
+      "source": "station metadata"
+    }
+  ],
+  
+  "target": {
+    "name": "has_precipitation",
+    "type": "binary",
+    "description": "1 if precipitation_mm > 0, else 0",
+    "derived_from": "R1 (precipitation_mm)",
+    "positive_class": 1,
+    "negative_class": 0,
+    "expected_imbalance": "Approximately 70% class 0, 30% class 1 (varies by region/season)"
+  },
+  
+  "quality_flags": {
+    "source": "DWD quality control",
+    "column_pattern": "QN_*",
+    "values": {
+      "1": "only formal control",
+      "2": "controlled, not all parameters corrected",
+      "3": "automatic correction performed",
+      "5": "historical data, subjective procedures",
+      "7": "second control, not corrected",
+      "8": "quality assured",
+      "9": "not all parameters quality controlled",
+      "10": "quality assured, all parameters controlled"
+    },
+    "recommendation": "Use quality flag >= 7 for highest reliability"
+  },
+  
+  "missing_values": {
+    "numeric_codes": [-999, -999.0, -999.00],
+    "string_codes": ["", " ", "eor"],
+    "handling_strategy": "Replace with null, then impute or drop"
+  },
+  
+  "feature_count": {
+    "raw": 15,
+    "engineered": 16,
+    "total": 31,
+    "note": "Exceeds assignment requirement of >10 features"
+  }
+}

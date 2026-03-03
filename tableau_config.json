@@ -1,0 +1,232 @@
+﻿{
+  "tableau": {
+    "public_url": "[TO_BE_ADDED_AFTER_PUBLICATION]",
+    "workbook_name": "German Weather ML Dashboard",
+    "author": "[YOUR_NAME]",
+    "description": "Big Data ML Pipeline for Precipitation Prediction in Germany",
+    
+    "dashboards": [
+      {
+        "id": 1,
+        "name": "Data Quality & Pipeline Monitoring",
+        "description": "Monitor data ingestion, validation, and quality metrics",
+        "data_sources": [
+          "data_quality_summary.csv",
+          "pipeline_metrics.csv"
+        ],
+        "visualizations": [
+          {
+            "type": "heatmap",
+            "title": "Missing Values by Feature and Station",
+            "x": "feature",
+            "y": "station_id",
+            "color": "missing_rate"
+          },
+          {
+            "type": "histogram",
+            "title": "Feature Distributions",
+            "fields": ["temperature_c", "humidity_pct", "wind_speed_ms", "pressure_hpa"]
+          },
+          {
+            "type": "bar",
+            "title": "Pipeline Stage Timing",
+            "x": "stage",
+            "y": "duration_seconds"
+          },
+          {
+            "type": "kpi",
+            "title": "Data Summary",
+            "metrics": ["total_rows", "total_stations", "date_range", "null_rate"]
+          }
+        ],
+        "lod_expressions": [
+          "FIXED [station_id] : COUNTD([datetime])",
+          "FIXED [feature] : AVG([missing_rate])"
+        ],
+        "filters": ["date_range", "station_id", "bundesland"]
+      },
+      {
+        "id": 2,
+        "name": "Model Performance & Feature Importance",
+        "description": "Compare model metrics and understand feature contributions",
+        "data_sources": [
+          "model_metrics.csv",
+          "feature_importance.csv",
+          "confusion_matrices.csv",
+          "roc_curve_data.csv",
+          "learning_curves.csv"
+        ],
+        "visualizations": [
+          {
+            "type": "line",
+            "title": "ROC Curves (All Models)",
+            "x": "false_positive_rate",
+            "y": "true_positive_rate",
+            "color": "model_name"
+          },
+          {
+            "type": "bar_grouped",
+            "title": "Model Metrics Comparison",
+            "x": "metric",
+            "y": "value",
+            "color": "model_name"
+          },
+          {
+            "type": "confusion_matrix",
+            "title": "Confusion Matrices",
+            "parameter": "select_model"
+          },
+          {
+            "type": "horizontal_bar",
+            "title": "Feature Importance (Top 15)",
+            "x": "importance",
+            "y": "feature",
+            "sorted": true
+          },
+          {
+            "type": "line",
+            "title": "Learning Curves",
+            "x": "training_size",
+            "y": "accuracy",
+            "color": "dataset_type"
+          },
+          {
+            "type": "error_bar",
+            "title": "AUC with Bootstrap 95% CI",
+            "x": "model_name",
+            "y": "auc",
+            "error": "confidence_interval"
+          }
+        ],
+        "parameters": [
+          {"name": "select_model", "type": "string", "values": ["Logistic Regression", "Random Forest", "GBT", "SVM"]}
+        ],
+        "filters": ["model_name", "metric_type"]
+      },
+      {
+        "id": 3,
+        "name": "Business Insights & Recommendations",
+        "description": "Geographic and temporal patterns with actionable insights",
+        "data_sources": [
+          "station_results.csv",
+          "seasonal_patterns.csv",
+          "threshold_analysis.csv"
+        ],
+        "visualizations": [
+          {
+            "type": "map",
+            "title": "Prediction Accuracy by Station (Germany)",
+            "lat": "latitude",
+            "lon": "longitude",
+            "color": "accuracy",
+            "size": "sample_count"
+          },
+          {
+            "type": "heatmap",
+            "title": "Seasonal Precipitation Patterns",
+            "x": "month",
+            "y": "hour_of_day",
+            "color": "precipitation_probability"
+          },
+          {
+            "type": "line",
+            "title": "Threshold Optimization Curve",
+            "x": "threshold",
+            "y": ["precision", "recall", "f1", "expected_profit"]
+          },
+          {
+            "type": "text_table",
+            "title": "Sector Recommendations",
+            "columns": ["sector", "recommendation", "confidence"]
+          }
+        ],
+        "parameters": [
+          {"name": "select_threshold", "type": "float", "range": [0.1, 0.9], "step": 0.05}
+        ],
+        "annotations": [
+          {"text": "Optimal threshold for cost matrix", "location": "threshold_curve"},
+          {"text": "Higher accuracy in southern regions", "location": "map"}
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Scalability & Cost Analysis",
+        "description": "Analyze computational performance and cost-efficiency",
+        "data_sources": [
+          "scalability_results.csv",
+          "resource_usage.csv",
+          "mllib_sklearn_comparison.csv"
+        ],
+        "visualizations": [
+          {
+            "type": "line",
+            "title": "Training Time vs Data Size (Strong Scaling)",
+            "x": "data_size",
+            "y": "training_time_seconds",
+            "color": "model_name"
+          },
+          {
+            "type": "line",
+            "title": "Training Time vs Cores (Weak Scaling)",
+            "x": "num_cores",
+            "y": "training_time_seconds",
+            "color": "model_name"
+          },
+          {
+            "type": "bar",
+            "title": "Memory Usage by Algorithm",
+            "x": "model_name",
+            "y": "peak_memory_mb"
+          },
+          {
+            "type": "bar_grouped",
+            "title": "MLlib vs scikit-learn Comparison",
+            "x": "sample_size",
+            "y": "training_time_seconds",
+            "color": "framework"
+          },
+          {
+            "type": "scatter",
+            "title": "Cost-Performance Tradeoff",
+            "x": "training_time_seconds",
+            "y": "auc",
+            "color": "model_name",
+            "size": "memory_mb"
+          }
+        ],
+        "annotations": [
+          {"text": "MLlib outperforms sklearn at >100K rows", "location": "comparison_chart"},
+          {"text": "Diminishing returns beyond 4 cores", "location": "weak_scaling"}
+        ]
+      }
+    ],
+    
+    "design": {
+      "color_palette": "Tableau 10",
+      "primary_color": "#1f77b4",
+      "secondary_color": "#ff7f0e",
+      "background": "#ffffff",
+      "font_family": "Tableau Regular",
+      "mobile_responsive": true,
+      "dashboard_size": {"width": 1200, "height": 800}
+    },
+    
+    "interactivity": {
+      "lod_expressions": true,
+      "parameter_controls": true,
+      "action_filters": true,
+      "tooltips_detailed": true,
+      "export_functionality": true
+    },
+    
+    "best_practices": [
+      "Use Tableau extracts for performance with large data",
+      "Implement LOD expressions for station-level aggregations",
+      "Add parameter controls for model selection",
+      "Include clear annotations on key insights",
+      "Design mobile-responsive layouts",
+      "Use action filters to connect dashboards",
+      "Export functionality for stakeholders"
+    ]
+  }
+}

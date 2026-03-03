@@ -1,0 +1,5 @@
+model_name,true_negative,false_positive,false_negative,true_positive
+Logistic Regression,3653,2365,1457,2525
+Random Forest,3959,2059,1780,2202
+Gradient Boosted Trees,4906,1112,2599,1383
+Support Vector Machine,4931,1087,2525,1457
